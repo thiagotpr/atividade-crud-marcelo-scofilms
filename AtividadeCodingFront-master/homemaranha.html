@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Avaliação - Homem-Aranha</title>
+</head>
+<body class="dark-theme">
+    <header class="dark-theme">
+        <button id="back-button" onclick="location.href='index.html'">Voltar para a Página Inicial</button>
+        <h1>Avaliação - Homem-Aranha</h1>
+    </header>
+    <main class="dark-theme">
+        <div class="movie-details">
+            <div class="movie-container">
+                <img src="https://br.web.img3.acsta.net/pictures/bzp/01/29007.jpg" alt="Homem-Aranha" height="200px">
+                <div class="right-align">
+                    <h2>Homem-Aranha</h2>
+                    <p>Dirigido por Sam Raimi</p>
+                    <p class="justificado"="right-align">Sinopse: "Homem-Aranha" (2002) é o primeiro longa-metragem da trilogia do 
+                      Homem-Aranha dirigida por Sam Raimi e é estrelado por Tobey Maguire no papel de Peter Parker, o Homem-Aranha. 
+                      A história narra a transformação de Peter Parker, um jovem estudante de ensino médio, em um super-herói após ser 
+                      picado por uma aranha geneticamente modificada.
+
+                        A trama começa com a vida de Peter como um adolescente comum, lidando com as pressões da escola e os desafios da 
+                        vida cotidiana. No entanto, tudo muda quando ele é picado por uma aranha radioativa durante uma visita à Oscorp Corporation.</p>
+                </div>
+            </div>
+        </div>
+             
+  <script src="script.js"></script>
+
+  <div class="critica2">
+        <h2>Escreva sua crítica:</h2>
+        <form id="movieReviewForm">
+          <label for="name">Seu Nome:</label>
+          <input type="text" id="name" required>
+          <br><br>
+  
+          <label for="review">Sua Crítica:</label>
+          <textarea id="review" required></textarea>
+          <br><br>
+        
+
+          <label for="rating">Sua Avaliação (de 1 a 5):</label>
+          <input type="number" id="rating" min="1" max="5" required>
+         <br><br>
+        <button id="submit">Enviar Crítica</button>
+        <hr> 
+        <div class="chart-container">
+            <canvas id="myChart"></canvas>
+        </div>
+    
+
+        <h2>Críticas:</h2>
+        <ul id="reviews"></ul>
+
+        
+
+</div>
+</main>
+<script>
+var reviews = [];
+var ctx = document.getElementById('myChart').getContext('2d');
+var data = {
+    labels: ['1✩', '2✩', '3✩', '4✩',  '5✩'],
+    datasets: [
+        {
+            label: 'Avaliação Geral',
+            data: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderColor: 'rgba(75, 192, 192, 1)',
+            borderWidth: 1,
+        },
+    ],
+};
+var options = {
+    scales: {
+        y: {
+            beginAtZero: true,
+            max: 100,
+        },
+    },
+};
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: data,
+    options: options,
+});
+var submitButton = document.getElementById('submit');
+submitButton.addEventListener('click', function () {
+    var nameInput = document.getElementById('name');
+    var reviewInput = document.getElementById('review');
+    var ratingInput = document.getElementById('rating');
+    var name = nameInput.value;
+    var review = reviewInput.value;
+    var rating = parseFloat(ratingInput.value);
+    if (!name || !review || isNaN(rating) || rating < 0 || rating > 5) {
+        alert('Por favor, preencha os campos corretamente.');
+        return;
+    }
+    reviews.push({ name: name, review: review, rating: rating });
+    updateReviews();
+    updateChart();
+    nameInput.value = '';
+    reviewInput.value = '';
+    ratingInput.value = '';
+});
+function updateReviews() {
+    var reviewsList = document.getElementById('reviews');
+    reviewsList.innerHTML = '';
+    for (var i = 0; i < reviews.length; i++) {
+        var li = document.createElement('li');
+        li.innerHTML = `<strong>${reviews[i].name}:</strong> ${reviews[i].review} (Avaliação: ${reviews[i].rating}✩)`;
+        var editButton = document.createElement('button');
+        editButton.textContent = 'Editar';
+        editButton.addEventListener('click', function (index) {
+            return function () {
+                editReview(index);
+            };
+        }(i));
+        var deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Apagar';
+        deleteButton.addEventListener('click', function (index) {
+            return function () {
+                deleteReview(index);
+            };
+        }(i));
+        li.appendChild(editButton);
+        li.appendChild(deleteButton);
+        reviewsList.appendChild(li);
+    }
+}
+function updateChart() {
+    var ratingsCount = [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    for (var i = 0; i < reviews.length; i++) {
+        var rating = Math.floor(reviews[i].rating);
+        ratingsCount[rating - 1]++;
+    }
+    myChart.data.datasets[0].data = ratingsCount;
+    myChart.update();
+}
+function editReview(index) {
+    var editedReview = prompt('Editar a crítica:', reviews[index].review);
+    if (editedReview !== null) {
+        reviews[index].review = editedReview;
+        updateReviews();
+    }
+}
+function deleteReview(index) {
+    var confirmDelete = confirm('Tem certeza que deseja apagar esta crítica?');
+    if (confirmDelete) {
+        reviews.splice(index, 1);
+        updateReviews();
+        updateChart();
+    }
+}
+</script>
+</body>
+</html>
+
